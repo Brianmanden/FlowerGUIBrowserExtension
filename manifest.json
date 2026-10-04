@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "FlowerGUI",
+  "version": "0.1.0",
+  "description": "Hold Ctrl+Shift and right-click anywhere to open a radial launcher for your most recently visited sites.",
+  "permissions": ["history", "favicon", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/flower.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["content/flower.css", "_favicon/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+.flowergui-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  transform: scale(0.85);
+  pointer-events: none;
+  transition: opacity 120ms ease, transform 120ms ease;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  z-index: 2147483647;
+}
+
+.flowergui-container.flowergui-visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.flowergui-center {
+  position: absolute;
+  top: -28px;
+  left: -28px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffb347, #ff7f32);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.flowergui-petals {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+}
+
+.flowergui-petal-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  transform: rotate(var(--angle));
+}
+
+.flowergui-petal {
+  /* No counter-rotation here: this element IS the petal shape, so it must
+     keep the wrapper's rotation in order for the clip-path's pointed end
+     (drawn pointing "down" in local coordinates) to end up facing the
+     flower's center at every angle around the circle. */
+  position: absolute;
+  top: -183px;
+  left: -45px;
+  width: 90px;
+  height: 143px;
+  /* Teardrop: pointed at the bottom (base, near the flower center) so
+     adjacent petals don't collide where the circle's circumference is
+     smallest; rounded and wide at the top (tip, away from the center)
+     where there's room to spread out. Coordinates are the 90x110 version
+     scaled 1.3x in the y-axis only, to make the petal longer without
+     widening it. */
+  clip-path: path(
+    "M45 140 C 15 120, 4 83, 4 55 C 4 21, 24 3, 45 3 C 66 3, 86 21, 86 55 C 86 83, 75 120, 45 140 Z"
+  );
+  border: none;
+  padding: 0;
+  background: #c8f7c5;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+  cursor: pointer;
+  transition: background 100ms ease, filter 100ms ease;
+}
+
+.flowergui-petal:hover {
+  background: #aef0a8;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+}
+
+.flowergui-petal-content {
+  /* No counter-rotation: the content rotates together with the petal
+     shape, the same way the original WPF app's ContentPresenter rotates
+     with its button instead of staying upright. Icon and label are
+     positioned individually (not flexed) because the label gets its own
+     90-degree rotation below. */
+  position: absolute;
+  inset: 0;
+  font-size: 10px;
+  color: #222222;
+  pointer-events: none;
+}
+
+.flowergui-favicon {
+  /* Anchored near the top of the box: the far/outer tip of the petal. */
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  margin-left: -10px;
+  width: 20px;
+  height: 20px;
+}
+
+.flowergui-label {
+  /* Laid out as a short horizontal strip along the petal's length, then
+     rotated so the text reads along that length (matching the original
+     WPF app's fixed -90 degree ContentPresenter rotation) instead of
+     across the petal's width. The box is centered on the lower half of
+     the petal -- near the base/center end -- before rotating in place. */
+  position: absolute;
+  top: 76px;
+  left: 3px;
+  width: 84px;
+  height: 16px;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  transform: rotate(-90deg);
+}
+
+.flowergui-empty {
+  position: absolute;
+  top: -20px;
+  left: -90px;
+  width: 180px;
+  text-align: center;
+  font-size: 12px;
+  color: #555;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 8px 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
