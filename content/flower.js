@@ -26,6 +26,21 @@
     true
   );
 
+  // The browser's native "Shift+Click extends the selection" behavior
+  // fires on mousedown, before contextmenu, so by the time the handler
+  // above runs it's too late -- the page's text selection has already
+  // been changed (or created from nothing). Block it at the source for
+  // this specific combo, without touching mousedown in any other case.
+  document.addEventListener(
+    "mousedown",
+    (e) => {
+      if (e.button === 2 && e.ctrlKey && e.shiftKey) {
+        e.preventDefault();
+      }
+    },
+    true
+  );
+
   function ensureHost() {
     if (shadowHost) return;
 
