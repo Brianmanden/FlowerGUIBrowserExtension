@@ -12,6 +12,7 @@
 
   let shadowHost = null;
   let shadowRoot = null;
+  let tooltip = null;
   let isOpen = false;
 
   document.addEventListener(
@@ -62,6 +63,46 @@
       <div class="flowergui-petals"></div>
     `;
     shadowRoot.appendChild(container);
+
+    // Custom tooltip: the browser's native title tooltip has a fixed
+    // ~1s delay that can't be configured, so we render our own and show
+    // it instantly on hover. Appended to the shadow root (not the
+    // container) because the container's transform would make
+    // position: fixed relative to the container instead of the viewport.
+    tooltip = document.createElement("div");
+    tooltip.className = "flowergui-tooltip";
+    tooltip.innerHTML = `
+      <div class="flowergui-tooltip-title"></div>
+      <div class="flowergui-tooltip-url"></div>
+    `;
+    shadowRoot.appendChild(tooltip);
+  }
+
+  const TOOLTIP_OFFSET = 14;
+
+  function showTooltip(item, e) {
+    tooltip.querySelector(".flowergui-tooltip-title").textContent = item.title;
+    tooltip.querySelector(".flowergui-tooltip-url").textContent = item.url;
+    tooltip.classList.add("flowergui-tooltip-visible");
+    moveTooltip(e);
+  }
+
+  function moveTooltip(e) {
+    const rect = tooltip.getBoundingClientRect();
+    let x = e.clientX + TOOLTIP_OFFSET;
+    let y = e.clientY + TOOLTIP_OFFSET;
+    if (x + rect.width > window.innerWidth) {
+      x = e.clientX - TOOLTIP_OFFSET - rect.width;
+    }
+    if (y + rect.height > window.innerHeight) {
+      y = e.clientY - TOOLTIP_OFFSET - rect.height;
+    }
+    tooltip.style.left = `${Math.max(0, x)}px`;
+    tooltip.style.top = `${Math.max(0, y)}px`;
+  }
+
+  function hideTooltip() {
+    tooltip?.classList.remove("flowergui-tooltip-visible");
   }
 
   async function openFlower(cursorX, cursorY) {
@@ -107,6 +148,7 @@
 
     const container = shadowRoot?.querySelector(".flowergui-container");
     container?.classList.remove("flowergui-visible");
+    hideTooltip();
 
     document.removeEventListener("keydown", onKeyDown, true);
     document.removeEventListener("mousedown", onOutsideMouseDown, true);
@@ -137,7 +179,9 @@
       const petal = document.createElement("button");
       petal.className = "flowergui-petal";
       petal.type = "button";
-      petal.title = item.title;
+      petal.addEventListener("mouseenter", (e) => showTooltip(item, e));
+      petal.addEventListener("mousemove", moveTooltip);
+      petal.addEventListener("mouseleave", hideTooltip);
 
       const content = document.createElement("div");
       content.className = "flowergui-petal-content";
